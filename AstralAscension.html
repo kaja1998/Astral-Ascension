@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Astral Ascension</title>
+    </head>
+    <body>
+        <h1>Astral Ascension</h1>
+        <div class="word"></div>
+        <div id="pong-table">
+            <div id="paddle"><img src="SpaceShooter.png" alt="Paddle" width="90" height="124"></div>
+            <div id="myModal1" class="modal">
+                <div class="modal-content">
+                    <p>Play Game</p>
+                    <img src="pfeiltasten.png" alt="Pfeiltasten" width="250">
+                    <button id="goButton">Go!</button>
+                </div>
+            </div>
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <p>Game Over</p>
+                    <button id="restartButton">Restart</button>
+                </div>
+            </div>
+            <div id="myModal2" class="modal">
+                <div class="modal-content">
+                    <p>You've won!</p>
+                    <button id="restartButton2">Play again</button>
+                </div>
+            </div>
+        </div>
+        <ul class="game-stats">
+            <li class="coin-count" id="coinCountElement">Coins: 0</li>
+            <li class="level" id="levelElement">Level: 1</li>
+            <li class="lives" id="livesElement">Lives: 3</li>
+        </ul>
+        <script src="AstralAscension.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    </body>
+</html>
+
+    <style>
+        body {
+            background-color: black;
+            background-image: url("Hintergrund.jpg");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        h1 {
+            font-family: "Astro Armada Gradient 2 Italic";
+            font-size: 80px;
+            color: #aa37ff;
+            text-shadow: 0 0 3px #00e7e7, 0 0 15px rgba(161, 178, 255, 0.83);
+            text-align: center;
+            overflow: hidden;
+            word-wrap: break-word;
+            white-space: nowrap;
+            animation: typing 4s steps(30) alternate;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0px;
+            }
+            to {
+                width: 20ch;
+            }
+        }
+
+        #pong-table {
+            width: 800px;
+            height: 600px;
+            background-image: url("Spiel-Hintergrund.png");
+            background-size: 800px 600px;
+            background-position: center;
+            background-color: #1f1e29;
+            position: relative;
+            margin-top: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 6px;
+            outline: 5px solid #5c00b0;
+            overflow: hidden;
+            box-shadow: 0 0 20px #5c00b0, 0 0 30px rgb(0, 231, 231);
+        }
+
+        .asteroid {
+            position: absolute;
+            width: 90px;
+            height: 80px;
+            background-image: url("Meteorit.png");
+            background-size: cover;
+        }
+
+        .ufo {
+            position: absolute;
+            width: 140px;
+            height: 100px;
+            margin-left: -65px;
+            background-image: url("UFO.png");
+            background-size: cover;
+            /* z-index: 2; */
+        }
+
+        .coin {
+            width: 40px;
+            height: 40px;
+            background-image: url("Coin.png");
+            position: absolute;
+            background-size: cover;
+        }
+
+        .bomb {
+            position: absolute;
+            width: 90px;
+            height: 80px;
+            background-image: url("Bombe.png");
+            background-size: cover;
+        }
+
+        #paddle {
+            width: 90px;
+            height: 124px;
+            background: none;
+            position: absolute;
+        }
+
+        #paddle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bullet {
+            width: 5px;
+            height: 10px;
+            background-color: #00d0ff;
+            position: absolute;
+            margin-left: 31px;
+            box-shadow: 0 0 3px #00e7e7, 0 0 15px rgb(255, 255, 255);
+            border-radius: 8px;
+        }
+
+        .ufoBullet {
+            width: 10px;
+            height: 10px;
+            background-color: #b10303;
+            position: absolute;
+            margin-top: 56px;
+            border-radius: 8px;
+            /* z-index: 1; */
+        }
+
+        .game-stats {
+            width: 800px;
+            list-style: none;
+            display: flex;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0;
+            margin-bottom: 0;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        .game-stats .level {
+            margin-bottom: 30px;
+        }
+
+        .game-stats li {
+            font-family: "Astro Armada Gradient 2 Italic";
+            font-size: 30px;
+            color: #3c0064;
+            text-shadow: 0 0 3px #aa37ff, 0 0 15px rgba(161, 178, 255, 0.83);
+            font-weight: bold;
+            text-align: left;
+            padding: 20px;
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(0, 0);
+            }
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translate(-5px, 0);
+            }
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translate(5px, 0);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        /* Pop-Up Fenster */
+        .modal {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.2);
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+        }
+
+        .modal-content {
+            background-color: rgba(0, 0, 0, 0.5);
+            font-family: "Astro Armada Twotone";
+            letter-spacing: 5px;
+            font-size: 100px;
+            font-weight: bold;
+            height: 600px;
+            text-align: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: none;
+        }
+
+        .modal-content p {
+            color: #ffffff;
+            font-size: 90px;
+            margin-bottom: 0;
+        }
+
+        #goButton {
+            font-family: "Astro Armada Gradient 2 Italic";
+            letter-spacing: 4px;
+            font-size: 40px;
+            padding: 10px 20px;
+            background-color: rgba(161, 178, 255, 0.83);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 90px;
+            margin-top: 25px;
+            box-shadow: 0 0 20px #5c00b0, 0 0 30px rgb(0, 231, 231);
+        }
+
+        #goButton:hover {
+            background-color: rgba(111, 137, 253, 0.83);
+        }
+
+        #restartButton {
+            font-family: "Astro Armada Gradient 2 Italic";
+            letter-spacing: 4px;
+            font-size: 40px;
+            padding: 10px 20px;
+            background-color: rgba(161, 178, 255, 0.83);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 25px;
+            margin-bottom: 90px;
+            box-shadow: 0 0 20px #5c00b0, 0 0 30px rgb(0, 231, 231);
+        }
+
+        #restartButton:hover {
+            background-color: rgba(111, 137, 253, 0.83);
+        }
+
+        #restartButton2 {
+            font-family: "Astro Armada Gradient 2 Italic";
+            letter-spacing: 4px;
+            font-size: 40px;
+            padding: 10px 20px;
+            background-color: rgba(161, 178, 255, 0.83);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 25px;
+            margin-bottom: 90px;
+            box-shadow: 0 0 20px #5c00b0, 0 0 30px rgb(0, 231, 231);
+        }
+
+        #restartButton2:hover {
+            background-color: rgba(111, 137, 253, 0.83);
+        }
+
+        .level-window {
+            position: fixed;
+            font-family: "Astro Armada Gradient 2 Italic";
+            letter-spacing: 4px;
+            font-size: 50px;
+            background-color: rgba(9, 21, 58, 0.83);
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+    </style>
